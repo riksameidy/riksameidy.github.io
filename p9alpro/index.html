@@ -97,7 +97,7 @@ Lecture 9 - Array Based Sequences
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
 ## Lecturer
-##### Riksa Meidy Karim, S.Kom., M.Si., M.Sc.
+> ##### Riksa Meidy Karim, S.Kom., M.Si., M.Sc.
 </div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
@@ -108,8 +108,7 @@ Lecture 9 - Array Based Sequences
 4. Tuples
 5. Set
 6. Dictionary
-7. Strings
-8. Numpy Arrays
+7. Exercise
 </div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
@@ -800,7 +799,120 @@ print(A.symmetric_difference(B))
 - notation: {key:value , key2:value2, ...}
 - the keys **must be immutable** data type
 - the value can be of any data type
-</div></script></section><section  data-markdown><script type="text/template"></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Creating Dictionary
+
+```python
+# an empty dictionary (initialization)
+d = {}
+# dictionary with alphabet character keys
+d = {'a':'alpha', 'b':'beta', 'c':'comma'}
+# dictionary with numeric keys
+d = {1:'alpha', 2:'beta', 3:'comma'}
+# dictionary with mixed keys
+d = {'a':'alpha', 2:'beta', 'c':'comma'}
+```
+
+```python
+# using constractor dict() 
+d = dict({
+		  1:'alpha',
+		  2:'beta'
+	})
+# from sequence (list) having each item as a pair
+d = dict([
+		  (1,'alpha'),
+		  (2,'beta')
+	])
+#
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Accessing Element in Dictionary
+- We can access a value in dictionary using 
+- We can get value by calling keys inside square brackets [] or with the get() method
+- In case a key is not found in the dictionary, if we use the square brackets [] then it will return a KeyError
+- On the other hand, if the key is not found and we use the get() method, it will return 'None'
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Accessing Element in Dictionary
+
+```python
+d = {'alpha':'a', 'beta':'b', 'comma':'c'}
+# print a
+print(d[alpha])
+# print alpha using .get()
+print(d.get('alpha'))
+# print d but will return a KeyError
+print(d[gamma])
+# print d using .get() but will return None
+print(d.get('gamma'))
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Changing and Adding Elements in Dictionary
+- Dictionaries are mutable. 
+- We can add new items or change the value of existing items using an assignment operator.
+- If the key is already present, then the existing value gets updated.
+
+```python
+d = {'alpha':'a', 'beta':'b', 'comma':'c'}
+# adding element d with gamma as key
+d['gamma']='d'
+# output will be d = {'alpha':'a', 'beta':'b', 'comma':'c', 'gamma':'d'}
+print(d)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Removing Elements in Dictionary
+- We can remove an item by using the `pop()` method with the provided `key` and returns the `value`.
+- The `popitem()` method can be used to remove and return an arbitrary `(key, value)` item pair from the dictionary. 
+- All the items can be removed at once, using the `clear()` method or the `del` keyword to remove entire dictionary itself.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Removing Elements in Dictionary
+
+```python
+d = {'alpha':'a', 'beta':'b', 'comma':'c','gamma':'d'}
+# remove a particular item d, returns its value
+#output will be 'd'
+print(d.pop('gamma'))
+# remove an arbitrary item, return (key,value)
+# output will be ('comma', 'c')
+print(d.popitem())
+# output will be {}
+# remove all items
+d.clear()
+# delete the dictionary itself
+del d
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 07
+### Exercise
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Exercise here
+#### [Exercise 9]()
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+##### Thank You :)
+> **The best amongst  you is the one who is the most beneficial to others.**
+> 
+> Prophet Muhammad S.A.W.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
 ## Reference
@@ -808,7 +920,10 @@ print(A.symmetric_difference(B))
 - Michael T. Goodrich, et al. 2013. ***Data Structures and Algorithms*** ***in Python*** (1st. ed.). Wiley Publishing
 - Lecture Slides from Telkom University Informatics Engineering Basic Algorithm and Programming class.
 - [Google for Education - Python](https://developers.google.com/edu/python/)
-</div></script></section></div>
+- [Programiz Course](https://www.programiz.com/python-programming)
+
+<aside class="notes"><p>#slides #alpro #kuliah #pengajaran #dosen</p>
+</div></aside></script></section></div>
     </div>
 
     <script src="dist/reveal.js"></script>
