@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+	<link rel="stylesheet" href="plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Data Structure
+##### Lecture 9 
+#### Object Oriented Programming 
+
+##### Data Science ITERA 
+##### 2022
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Lecturer
+> ##### Riksa Meidy Karim, S.Kom., M.Si., M.Sc.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Outline
+- Introduction
+- Class and Object
+- Implementing Class
+- Main OOP Concept
+- Exercise
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 01
+## Introduction
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object-Oriented Paradigm
+- The main “actors” in the object-oriented paradigm are called **objects**
+- Each object is an instance of a **class**
+- The class definition typically specifies **instance variables**
+
+<aside class="notes"><ul>
+<li>The main “actors” in the object-oriented paradigm are called objects. </li>
+<li>Each object is an instance of a class. </li>
+<li>Each class presents to the outside world a concise and consistent view of the objects that are instances of this class, without going into too much unnecessary detail or giving others access to the inner workings of the objects. </li>
+<li>The class definition typically specifies instance variables, also known as data members, that the object contains, as well as the methods, also known as member functions, that the object can execute.</div></li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object-Oriented Goals
+
+- Robustness
+- Adaptability
+- Reusability
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Object-Oriented Goals
+
+
+ > #### Robustness
+> Capable of handling unexpected inputs
+
+<aside class="notes"><ul>
+<li>A system must be robust, that is, capable of handling unexpected inputs that are not explicitly defined for its application. </li>
+<li>For example, if a program is expecting a positive integer (perhaps representing the price of an item) and instead is given a negative integer, then the program should be able to recover gracefully from this error.</div></li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Object-Oriented Goals
+
+> #### Adaptability
+> Run with minimal change on different hardware and operating system platforms
+
+<aside class="notes"><ul>
+<li>A system must achieve adaptability (also called evolvability). </li>
+<li>Related to this concept is portability, which is the ability of system to run with minimal change on different hardware and operating system platforms. </li>
+<li>An advantage of writing software in Python is the portability provided by the language itself.</div></li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Object-Oriented Goals
+
+> #### Reusability
+> The same code should be usable as a component
+
+<aside class="notes"><ul>
+<li>A system must be reusable, that is, the same code should be usable as a component of different systems in various applications. </li>
+<li>Developing quality system can be an expensive enterprise, and its cost can be offset somewhat if the system is designed in a way that makes it easily reusable in future applications.</div></li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object-Oriented Principles
+- Modularity
+- Abstraction
+- Encapsulation
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Object-Oriented Principles
+
+> #### Modularity
+A collection of closely related functions and classes that are defined together in a single file of source code
+
+<aside class="notes"><ul>
+<li>Modularity refers to an organizing principle in which different components of a system are divided into separate functional units.</li>
+<li>In Python, we have already seen that a module is a collection of closely related functions and classes that are defined together in a single file of source code.</li>
+<li>The use of modularity helps support the goal of robustness is greatly increased because it is easier to test and debug separate components before they are integrated into a larger system.</div></li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Object-Oriented Principles
+
+> #### Abstraction
+Model of a data structure
+- Type of data stored
+- Operations supported on them
+- Types of parameters of the operations
+
+<aside class="notes"><ul>
+<li>The notion of abstraction is to distill a complicated system down to its most fundamental parts.</li>
+<li>Applying the abstraction paradigm to the design of data structures gives rise to abstract data types (ADTs). An ADT is a mathematical model of a data structure that specifies the type of data stored, the operations supported on them, and the types of parameters of the operations.</li>
+<li>Python supports abstract data types using a mechanism known as an abstract base class (ABC).</li>
+<li>An ADT specifies what each operation does, but not how it does it.</div></li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Object-Oriented Principles
+
+> #### Encapsulation
+> Assumed some data structure to be public or which are assumed to be internal details
+
+<aside class="notes"><ul>
+<li>The main advantages of encapsulation is that it gives one programmer freedom to implement the details of a component, without concern that other programmers will be writing code that intricately depends on those internal decisions. </li>
+<li>The only constraint on the programmer of a component is to maintain the public interface for the component, as other programmers will be writing code that depends on that interface.</li>
+<li>Encapsulation yields robustness and adaptability, for it allows the implementation details of parts of a program to change without adversely affecting other parts, thereby making it easier to fix bugs or add new functionality with relatively local changes to a component.</div></li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Object-Oriented Pattern
+
+- **Designing** good code **takes more** than simply understanding object-oriented methodologies
+- It requires the effective use of object-oriented design techniques.
+- Example : Iterator Class
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 02
+## Class and Object
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Class
+- A class is a data type of the data and methods for a specific type of object (blueprint)
+- A class serves as the primary means for abstraction in object-oriented programming. 
+- A class has an attribute and method
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Class Attribute and Method
+
+> #### Method
+a set of behaviors in the form of member functions with implementations that are common to all instances of that class.
+
+> #### Attribute
+The state information for each instance.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Class Diagram
+
+
+<div class="mermaid">
+classDiagram
+	class Cat{
+		+string name
+		+string race
+		+string gender
+		+boolean isPet
+		+string ownerName
+		+string state
+		meow()
+		sleep()
+		eat()
+		askAttention()
+		poop()
+		
+	}
+	class Dog{
+		+string name
+		+int month
+		+int day
+		+int year
+		speakText()
+	}
+	
+
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Class  Illustration 
+
+<img src="Dosen/Struktur Data/Pertemuan 9/img/class_illustration.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Attribute and Method for Dog Class
+>#### Attribute
+>name , month , day , year
+
+>#### Method
+>speaktext()
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Question 1
+#### Which one is the Attribute and Method for Cat Class?
+
+
+<div class="mermaid">
+classDiagram
+	class Cat{
+		+string name
+		+string race
+		+string gender
+		+boolean isPet
+		+string ownerName
+		+string state
+		meow()
+		sleep()
+		eat()
+		askAttention()
+		poop()
+		
+	}
+
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object
+- An object is an instance of a class
+- All data items in Python are objects
+-  In Python, every piece of data is represented as an instance of some class.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Instantiation
+- The process of creating object from a class
+- using () after the className
+- can contain parameters
+
+```python
+boycat = Cat()
+boyDog = Dog('Mesa',5,15,2004)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Question 2
+#### Which one is the  identifier, class and object?
+
+```python
+boyDog = Dog('Mesa',5,15,2004)
+boyDog.bark('WOOF')
+girlDog = Dog('Sequoia',5,6,2004)
+girlDog.bark('barkbark')
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 03
+## Implementing Class
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Constructor
+- A function that is called when the object is instantiated
+- defined by \_\_init\_\_ function
+- self is identier to the instance itself
+- We can set the attribute value of the class in this function
+
+```python
+
+# Class Definition
+class Dog:
+	# Constructor
+	def __init__(self,name):
+		self.name = name
+
+# Main program
+boydog = Dog('Mesa')
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Self Identifier
+
+```python
+class Dog:
+# The reference called "self" is created by Python
+# made to point to the space for the newly created object. 
+# "self" is a parameter
+
+	def __init__(self, name, month, day, year, speakText):     
+		self.name = name       
+		self.month = month        
+		self.day = day        
+		self.year = year        
+		self.speakText = speakText
+
+# Main Program
+boyDog = Dog("Mesa", 5, 15, 2004, "WOOOOF")
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Adding class attribute
+- using the self method
+
+> self.attribute = attribute_value
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Adding class method
+- defining a function inside the class definition
+
+```python
+
+class Dog:
+# The reference called "self" is created by Python
+# made to point to the space for the newly created object. 
+# "self" is a parameter
+
+	def __init__(self, name, month, day, year, speakText):     
+		self.name = name       
+		self.month = month        
+		self.day = day        
+		self.year = year        
+		self.speakText = speakText
+
+	def bark(self):
+		print(self.speaktext)
+
+# Main Program
+boyDog = Dog("Mesa", 5, 15, 2004, "WOOOOF")
+boyDog.speak()
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Example
+Implement this class in python
+
+
+<div class="mermaid">
+classDiagram
+class KTP{
+	string nik
+	string firstName
+	string lastName
+	string alamat
+	int tanggalLahir
+	int bulanLahir
+	int tahunLahir
+	showBirthdate()
+}
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Answer
+```python
+class KTP:
+    def __init__(self,nik,firstName,lastName,alamat,tanggalLahir,bulanLahir,tahunLahir):
+        self.nik = nik
+        self.firstName = firstName
+        self.lastName = lastName
+        self.alamat = alamat
+        self.tanggalLahir = tanggalLahir
+        self.bulanLahir = bulanLahir
+        self.tahunLahir = tahunLahir
+
+    def showBirthdate(self):
+        print(f" {self.tanggalLahir}/{self.bulanLahir}/{self.tahunLahir}  ")
+# Main Program
+ktp1 = KTP('302102','Karim','Sean','Bandung',15,5,1999)
+ktp1.showBirthdate()
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Accessor Method
+- Method to access the attribute of a class
+
+```python
+class Dog:
+	def __init__(self, name, month, day, year, speakText):     
+		self.name = name       
+		self.month = month        
+		self.day = day        
+		self.year = year        
+		self.speakText = speakText
+	# Here is an accessor method to get the name and speakText
+	def getName(self):
+		return self.name
+	# This is another accessor method
+	def birthDate(self): 
+		return str(self.month) + "/" + str(self.day) 
+	+ "/" + str(self.year)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Mutator Method
+- Method to change the attribute value of a class
+
+```python
+class Dog:
+
+def __init__(self, name, month, day, year, speakText):     
+	self.name = name       
+	self.month = month        
+	self.day = day        
+	self.year = year        
+	self.speakText = speakText
+
+# This is a mutator method
+# Change the speakText of the Dog object. 
+def changeBark(self,bark):        
+	self.speakText = bark
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+ def main():
+	 boyDog = Dog("Mesa", 5, 15, 2004, "WOOOOF") 
+	 girlDog = Dog("Sequoia", 5, 6, 2004, "barkbark")
+	 # Output : WOOOOF
+	 print(boyDog.speak())
+	 # Output : 5/6/2004
+	 print(girlDog.birthDate())
+	 boyDog.changeBark("woofywoofy")
+	 # Output : woofywoofy
+	 print(boyDog.speak())
+
+if __name__ == "__main__": 
+	main()
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Magic Method
+- Special methods that start and end with the double underscores
+
+```python
+
+class Dog:
+
+	# Insert function __add__ to Class
+	def __add__(self,otherDog):
+		return Dog("Puppy of " + self.name + " and " +
+		otherDog.name, self.month, self.day, self.year
+		+ 1, self.speakText + otherDog.speakText)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+def main:
+	puppy = boyDog + girlDog
+	# Output : woofywoofybarkbark
+	print(puppy.speak())
+	# Output : Puppy of Mesa and Sequoia
+	print(puppy.getName())
+	# Output : 5/15/2005
+	print(puppy.birthDate())
+
+if __name__ == "__main__":
+	main()
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Other Magic Methods
+<img src="Dosen/Struktur Data/Pertemuan 9/img/magic_methods.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 04
+## Main OOP Concept
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Main concept of OOP
+- Encapsulation
+- Inheritance
+- Polymorphism
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Encapsulation
+- we can restrict access to methods and variables. 
+- This prevents data from direct modification. 
+- In Python, we denote private attributes using underscore as the prefix i.e single `_` or double `__`.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Encapsulation Example
+Partitioning the attributes into public and private
+```python
+class Diary: 
+	def __init__(self, title): 
+		self.title = title 
+		self._entries = [] 
+		
+	# addentry method is public
+	def addentry(self, entry):
+		self._entries.append(entry) 
+	
+	# lastentry method is private
+	def _lastentry(self): 
+		return self._entries[-1]
+```
+
+```python
+mydiary = Diary("Don’t read this!!!")
+mydiary.addentry("It was a good day.") 
+print("The diary is called ", mydiary.title) 
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Inheritance
+The mechanism for a modular and hierarchical organization is a technique known as inheritance.
+
+<img src="Dosen/Struktur Data/Pertemuan 9/img/inheritance_illustration.png" alt="" style="object-fit: scale-down">
+
+
+
+<aside class="notes"><p>In object-oriented programming, the mechanism for a modular and hierarchical organization is a technique known as inheritance. Grouped at the most general level, reuse of code, while differentiated behaviors can be viewed as extensions of the general case</p>
+</div></aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Example 
+Suppose you have 2 class like this:
+
+```python
+class Triangle: 
+	def __init__(self, points): 
+		self._sides = 3 
+		self._points = list(points) 
+		if len(self._points) != 3: 
+			raise ValueError("Wrong number of points.") 
+	def sides(self): 
+		return 3 
+	def __str__(self): 
+		return "I’m a triangle."
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+class Polygon: 
+	def __init__(self, sides, points): 
+		self._sides = sides 
+		self._points = list(points) 
+		if len(self._points) != self._sides: 
+			raise ValueError("Wrong number of points.")
+	def sides(self): 
+		return self._sides
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Superclass and Subclass
+```python
+class Triangle(Polygon): 
+	def __init__(self, points): 
+		Polygon.__init__(self, 3, points) 
+	
+	def __str__(self): 
+		return "I’m a triangle."
+```
+- The Triangle class inherits from (or extends) the Polygon class
+- The superclass is Polygon
+- The subclasses is Triangle
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+# parent class
+class Bird:
+    
+    def __init__(self):
+        print("Bird is ready")
+
+    def whoisThis(self):
+        print("Bird")
+
+    def swim(self):
+        print("Swim faster")
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+# child class
+class Penguin(Bird):
+
+    def __init__(self):
+        # call super() function
+        super().__init__()
+        print("Penguin is ready")
+
+    def whoisThis(self):
+        print("Penguin")
+
+    def run(self):
+        print("Run faster")
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+# Main Program
+peggy = Penguin()
+peggy.whoisThis()
+peggy.swim()
+peggy.run()
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 05
+### Exercise
+[Exercise 9](https://github.com/riksameidy/exercise-strukdat-2022/blob/main/exercise9.md)
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Thank You :)
+> **The best amongst  you is the one who is the most beneficial to others.**
+> 
+> Prophet Muhammad S.A.W.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Reference
+- Michael, T.G., *Data Structures and Algorithms in Python*. Chapter 2. Wiley.
+- Donald, R. S., *A First Course on Data Structures in Python*.
+ - Kent, D.L., *Data Structures and Algorithms with Python* Chapter 1. Springer
+ - [Programmiz Course](https://www.programiz.com/python-programming/object-oriented-programming)
+
+<aside class="notes"><p>#slides #kuliah #pengajaran #dosen #strukturdata #strukdat #basicoop #oop #python</p>
+</div></aside></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/reveal-pointer/pointer.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
