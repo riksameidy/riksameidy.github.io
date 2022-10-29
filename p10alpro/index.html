@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/blood.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+	<link rel="stylesheet" href="plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Algorithm and Programming
+Lecture 10 - Basic Numerical Python (Numpy)
+
+##### Data Science ITERA 
+##### 2022
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Lecturer
+> ##### Riksa Meidy Karim, S.Kom., M.Si., M.Sc.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Outline
+1. Introduction
+2. Numpy Arrays Basic
+3. Universal Functions
+4. Exercise
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 01 
+### Introduction
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Why understanding sequence type?
+- Effective data-driven science and computation requires understanding how data is stored and manipulated.
+- Datasets can come from a wide range of sources and a wide range of formats
+	- collections of documents, 
+	- collections of images, 
+	- collections of sound clips, 
+	- collections of numerical measurements, 
+	- or nearly anything else
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Commonly Used Sequence Type in Data Science
+- Numpy, for scientific calculation
+- Pandas, for data analysis
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Is using List not enough? Why numpy?
+- List has a lot of flexibility , but it has a drawback
+```python
+L = [1,2,3,'Hello',0.96]
+```
+- Flexible means a list can contain variety of data type
+- To allow these flexible types, each item in the list must contain its own type info, reference count. Each item is a complete Python object.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Dynamic (List) vs Fixed (NumPy)
+<img src="Dosen/Algoritma Pemrograman/img/list_vs_array.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### List vs Numpy Array
+- At the implementation level, the array essentially contains a single pointer to one contiguous block of data
+- The Python list, on the other hand, contains a pointer to a block of pointers, each of which in turn points to a full Python object
+- Fixed-type NumPy-style arrays lack this flexibility, but are much more **efficient for storing and manipulating data**
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 02
+### Numpy Arrays Basic
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### First Look
+```python
+import numpy as np
+L = [1,2,3,4,5]
+arr = np.array(L)
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Numpy Array
+- The central data structure of the NumPy library
+- grid of values and it contains information about the raw data, how to locate an element, and how to interpret an element
+- it has a grid of elements that can be indexed in various ways.
+- The elements are all of the same type, referred to as the array dtype
+- The class name is ndarray
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Creating ndarray
+
+- From List
+
+```python
+np.array([1,2,3,4,5])
+# Specify dtype
+np.array( [1,2,3,4,5.5] , dtype='float32')
+
+```
+- From scratch
+
+```python
+np.zeros(10, dtype=int)
+np.ones((3,5), dtype=float)
+np.full((3,5), 3.14)
+np.eye(3)
+np.arange(0,40,4)
+np.linspace(0,1,5)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+####  NumPy Standard Data Types
+<img src="Dosen/Algoritma Pemrograman/img/ndarray_dtype.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Specifying dtype
+When constructing an array, they can be specified 
+- using a string
+
+```python
+arr = np.array([1,2,3,4],dtype='int32')
+```
+
+- using the associated NumPy object
+
+```python
+arr = np.array([1,2,3,4], dtype=np.int32)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Attribute of Array
+- **ndim** : number of dimension 
+- **shape**: the size of each dimension
+- **size**: total size of the array
+- **dtype** : type of the element
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Attribute of Array (Code)
+
+```python
+arr1 = np.random.randint(10,size=6)
+arr2 = np.random.randint(10,size=(3,4))
+arr3 = np.random.randint(10,size=(3,4,5))
+
+print(f"arr3 ndim : {arr3.ndim}")
+print(f"arr3 shape: {arr3.shape}")
+print(f"arr3 size: {arr3.size}")
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Array Indexing Single Element
+
+```python
+arr1[0] # single index
+arr1[-1] # Negative index
+arr2[0,1] # Multidimentional array : seperated by comma
+```
+```python
+arr2[0,2] = 10 # Change value like list
+```
+```python
+# Be careful
+arr1[0] = 3.14159
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Array Slicing Accessing Subarray
+- Standard syntax
+
+```python
+arr[start:stop:step]
+```
+- default value
+	- start = 0
+	- stop = size of dimension
+	- step = 1
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Example: One Dimensional Subarray
+
+```python
+
+arr = np.arange(10)
+arr[:5]
+arr[5:]
+arr[4:7]
+arr[::2]
+arr[1::2]
+arr[::-1] # step -1 : start and stop are swapped: arr reversed
+arr[5::-2] 
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Example: Multi Dimensional Subarray
+
+```python
+arr2 = np.random.randint(10,size=(3,4))
+arr2[:2 , :3]
+arr2[: , ::2]
+arr2[::-1 , ::-1 ]
+arr2[0,:] # row 0
+arr2[:,1] # column 1
+arr2[0]
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Copy by reference vs by value
+
+```python
+arr2 = np.random.randint(10,size=(3,4))
+arr2_sub = arr2[:2,:2]
+print(arr2_sub)
+arr2_sub[0,0] = 9999
+print('arr2_sub: \n',arr2_sub)
+print('original arr2: \n',arr2)
+```
+
+```python
+arr2 = np.random.randint(10,size=(3,4))
+arr2_sub_copy = arr2[:2,:2].copy()
+print(arr2_sub_copy)
+arr2_sub_copy[0,0] = 9999
+print('arr2_sub_copy: \n',arr2_sub_copy)
+print('original arr2: \n',arr2)
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Reshaping Array
+- Changing the shape from 1D ndarray , to 2D array with shape 3x3
+
+```python
+arr = np.arange(1,10)
+arr = arr.reshape((3,3))
+print(arr)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Reshaping Array : to Column or Row Vector
+
+```python
+arr = np.array([1,2,3])
+
+# to row vector
+arr.reshape((1,3))
+arr[np.newaxis,:]
+
+# to column vector
+arr.reshape((3,1))
+arr[:,np.newaxis]
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Array Concatination
+Joining two arrays:
+
+- `np.concatenate`
+- `np.vstack`
+- `np.hstack`
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+# concatenate
+X = np.array( [11,12,13] )
+Y = np.array( [0,1] )
+np.concatenate([X,Y])
+np.concatenate([X,X,Y,Y])
+# 2D array
+grd = np.array([[1,2,3],
+				[5,6,7]])
+np.concatenate([grd,grd])
+np.concatenate([grd,grd], axis=1)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+grd
+
+|     |     |     |     |
+| --- | --- | --- | --- |
+|     | 1   | 2   | 3   |
+|     | 5   | 6   | 7   | 
+|     |     |     |     |
+
+After concat with axis = 0
+
+|     |     |     |     |
+| --- | --- | --- | --- |
+|     | 1   | 2   | 3   |
+|     | 5   | 6   | 7   |
+|     | 1   | 2   | 3   |
+|     | 5   | 6   | 7    |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+grd
+
+|     |     |     |     |
+| --- | --- | --- | --- |
+|     | 1   | 2   | 3   |
+|     | 5   | 6   | 7   | 
+|     |     |     |     |
+
+After concat with axis = 1
+
+|     |     |     |     |     |     |     |
+| --- | --- | --- | --- | --- | --- | --- |
+|     | 1   | 2   | 3   | 1   | 2   | 3   |
+|     | 5   | 6   | 7   | 4   | 5   | 6   |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+# using np.vstack
+x = np.array([1, 2, 3])
+grid = np.array([[9, 8, 7],
+                 [6, 5, 4]])
+# vertically stack the arrays
+np.vstack([x, grid]
+```
+
+```python
+# using np.hstack
+grid = np.array([[9, 8, 7],
+                 [6, 5, 4]])
+# horizontally stack the arrays
+y = np.array([[99],
+              [99]])
+np.hstack([grid, y])
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Splitting Arrays
+Opposite of Concatenation
+- `np.split`
+- `np.hsplit`
+- `np.vsplit`
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+**np.split**
+- We can pass a list of splitting index
+- _N_ split-points, leads to _N + 1_ subarrays
+
+```python
+x = [1, 2, 3, 99, 99, 3, 2, 1]
+x1, x2, x3 = np.split(x, [3, 5])
+print(x1, x2, x3)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+np.vsplit
+```python
+grid = np.arange(16).reshape((4, 4))
+upper, lower = np.vsplit(grid, [2])
+```
+
+np.hsplit
+```python
+left, right = np.hsplit(grid, [2])
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 03
+### Universal Functions
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Fast Computation using Numpy
+- Not all computation using numpy is fast
+- The key for fast computation is **vectorized operation**
+- vectorized operation generally implemented using **universal function (unfunc)**
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Vectorized operation: background
+Let's see this case
+- We have 10.000 data containing a sequence from 0 to 9999
+- We want to know the sum of that data
+- What we know so far, to sum these values we have to iterate each element and adding it one by one.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+# creating the sequence
+L = []
+for i in range(10000):
+	L.append(i)
+# Summing each element in the list
+jum = 0
+for l in L:
+	jum = jum + l
+
+print(jum) # takes about 800 ms
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Vectorized operation: background
+- These operation takes time an a lot of steps
+- Uses a lot of memory
+- Taking a lot of time
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Vectorized Operation: np.sum()
+- The optimized operation in the numpy library
+- Example using np.sum()
+```python
+L = np.arange(10000)
+s = np.sum(L)
+print(s) # takes about 11 ms
+```
+- much faster and robust
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Vectorized Operation
+
+> The term **vectorization** describes the use of optimized, pre-compiled code written in a low-level language.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Vectorized Operation vs Loop
+Usually it is much faster using ufuncs and vectorized operation rather than loop
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Example : Vectorized Operation
+Scalar and Vector operation
+```python
+res = 1 / np.arange(10000)
+```
+
+Vector and Vector operation
+```python
+res = np.arange(10000) / np.arange(1,10001)
+```
+
+2D array and scalar
+```python
+x = np.arange(100).reshape(3,3)
+res = 2 * x
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Types of Vectorized Function
+- unary function : f(x)
+- binary function : f(x,y)
+- sequential function: `$f(\{x_i\}_{i=1}^n)$`
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Unary Function
+> A unary function f(x) is a mathematical function that only accepts one operand
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Unary Function 
+| Unary Function f(x) | Numpy Function |
+| ------------------- | -------------- |
+| \|x\|               | np.absolute    |
+| `$\sqrt{x}$`          | np.sqrt        |
+| sin(x)              | np.sin         |
+| cos(x)              | np.cos         |
+| tan(x)              | np.tan         |
+| ln(x)               | np.log         |
+| `$e^x$`               | np.exp         |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Example 
+```python
+x = np.array([4,9,16])
+sqrtx = np.sqrt(x)
+expx = np.exp(x)
+print(sqrtx)
+print(expx)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Binary Function
+- A binary function has the form f(x,y)
+- Example:  arithmetic operator implements vectorized operation automatically
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+| `$f(x,y)$`      | numpy function   | python operator |
+| ------------- | ---------------- | --------------- |
+| `$x . y$`       | np.multiply(x,y) | x * y           |
+| `$\frac{x}{y}$` | np.divide(x,y)   | x / y           |
+| x + y         | np.add(x,y)      | x + y           |
+| x - y         | np.substract     | x-y             |
+| `$x^y$`         | np.pow(x,y)      | x ** y          |
+| x mod y       | np.mod(x,y)      | x % y           |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+| `$f(x,y)$` | numpy function |
+| -------- | -------------- |
+| max(x,y) | np.maximum     |
+| min(x,y) | np.minimum     |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Example: Binary Function
+```python
+x = np.array([4,5,6,7,8])
+y = np.array([7,8,9,10,11])
+# using python operator
+x + y
+# using numpy function
+np.add(x,y)
+# with slicing
+x[1:3] + y[0:2] + x[0:2]
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Sequential Functions
+> A sequential function expects a variable-length sequence of numbers as an input, and produces a single number as an output.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+| Sequential function `$f(\{x_i\}_{i=1}^n)$` | numpy function |
+| ---------------------------------------- | -------------- |
+| Mean                                     | np.mean        |
+| Median                                   | np.median      |
+| Variance                                 | np.var         |
+| Standard Deviation                       | np.std         |
+| Maximum value                            | np.max         |
+| Minimum value                            | np.min         |
+| Index of Maximum value                   | np.argmax      |
+| Index of Minimum value                   | np.argmin      |
+| Sum                                      | np.sum         |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Example
+```python
+x = np.array([12,1,2,3,4,4,5,6])
+np.mean(x)
+np.median(x)
+np.argmax(x)
+# on 2 d array
+x2 = x.reshape(2,4)
+np.mean(x2,axis=0)
+np.mean(x2,axis=1)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+#### Specifying output
+
+- For large calculations, it is sometimes useful to be able to specify the array where the result of the calculation will be stored. 
+- Rather than creating a temporary array, this can be used to write computation results directly to the memory location where you'd like them to be. 
+- For all ufuncs, this can be done using the `out` argument of the function
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```python
+x = np.arange(5)
+y = np.empty(5)
+np.multiply(x, 10, out=y)
+print(y)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 04
+### Exercise
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Exercise here
+#### [Exercise 10](https://github.com/riksameidy/exercise-alpro-2022/blob/master/Exercise10.md)
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+##### Thank You :)
+> **The best amongst  you is the one who is the most beneficial to others.**
+> 
+> Prophet Muhammad S.A.W.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Reference
+
+- Jake VanderPlas. Goodrich, et al. 2016. ***Python Data Science Handbook*** (1st. ed.). O'Reilly Media, Inc.
+- [Numpy Official Docs](https://numpy.org/doc/stable/index.html)
+
+<aside class="notes"><p>#slides #alpro #kuliah #pengajaran #dosen</p>
+</div></aside></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/reveal-pointer/pointer.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
