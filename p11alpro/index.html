@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+	<link rel="stylesheet" href="plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Algorithm and Programming
+####  Lecture 11 - Data Analysis with Pandas
+#### DATA SCIENCE ITERA
+##### 2022
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Outline
+- 01 : Introduction to Pandas
+- 02 : Creating Object in Pandas
+- 03 : Viewing Data with Pandas
+- 04 : Manipulating Data with Pandas
+- 05 : Exercise
+- 06 : Reference
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 01
+### Introduction to Pandas
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Pandas
+- Pandas adalah modul Python yang digunakan untuk bekerja dengan kumpulan data. 
+- Pandas memiliki fungsi untuk menganalisis, membersihkan, menjelajahi, dan memanipulasi data. 
+- Nama “Pandas” memiliki referensi ke “Data Panel”, dan “Analisis Data Python” zan dibuat oleh Wes McKinney pada tahun 2008.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Why using Pandas?
+- Pandas memungkinkan kita untuk menganalisis data besar dan membuat kesimpulan berdasarkan teori statistik.
+- Pandas dapat membersihkan kumpulan data yang berantakan, dan membuatnya dapat dibaca dan relevan.
+- Data yang relevan sangat penting dalam ilmu data sains.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 02
+### Creating Object in Pandas
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Installing Pandas
+
+```python
+# Menggunakan package manager pip
+$ pip install pandas
+
+# Menggunakan conda
+$ conda install pandas
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Import Pandas Modules
+
+```python
+# Cara 1 
+import pandas 
+
+# Cara 2 
+import pandas as pd
+
+# Cara 3 
+import pandas as pan 
+
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Import Pandas Modules
+
+```python
+
+# Outputkan Tipe pan , pandas dan pd 
+print( type(pandas) ) 
+print( type(pd) ) 
+print( type(pan) )
+
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputImportPandas.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation
+
+Pandas merupakan modul yang memiliki beberapa object yang dapat instansiasi atau dibangkitkan. Object-object tersebut adalah: 
+- Series : 1-d ndarray (array 1 dimensi) 
+- DataFrame : struktur data 2 dimensi seperti tabel
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation : Series
+
+- Series adalah array berlabel satu dimensi yang mampu menampung semua tipe data (bilangan bulat, string, angka floating point, objek Python, dll.). 
+- Label axis secara kolektif disebut sebagai indeks. Metode dasar untuk membuat Series adalah dengan memanggil: 
+
+```python
+s = pd.Series(data, index=index)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation : Series
+
+- Index adalah label yang panjangnya sama dengan data, jika index tidak didefinisikan, maka default nya adalah None sehingga series tidak memiliki label axis. 
+- Argumen data dapat berupa dictionary, numpy array, List, Scalar
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation : Series
+
+Contoh membuat series dari List
+```python
+import pandas as pd 
+
+data_list = [10, 17, 22] 
+s = pd.Series(data_list) 
+print(s)
+print(type(s))
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputSeriesList.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation : Dataframe
+
+- DataFrame adalah Data tabular dua dimensi, ukuran dapat berubah, berpotensi heterogen dan berisi sumbu berlabel (baris dan kolom).
+- Operasi aritmatika menyelaraskan pada label baris dan kolom. Dapat dianggap mirip seperti container dictionary untuk objek Series.
+- Dataframe adalah struktur data pandas yang utama. 
+```python
+pandas.DataFrame(data=None, index=None, 
+				 columns=None, dtype=None, copy=None)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation : Dataframe
+
+Contoh membuat dataframe dari List
+```python
+datas = [ ['Nagao',25] , ['Karim',22] , 
+		 ['Ali',45] , ['Samsul',20] ] 
+kolom = [ 'NAMA' , 'UMUR' ] 
+df = pd.DataFrame(data=datas, 
+				  columns = kolom , index=None) 
+print(df)
+```
+
+
+<img src="Dosen/Algoritma Pemrograman/img/outputDataframe.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation : Dataframe
+Contoh membuat dataframe dari Dictionary
+```python
+data_dict = { 'NAMA': ['Nagao','Karim','Ali','Samsul'],
+			 'UMUR': [25,22,45,20] } 
+df = pd.DataFrame(data = data_dict)
+print(df)
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputDataframe.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Creation : Dataframe
+Untuk melihat tipe data setiap kolom nya gunakan:
+```python
+df.dtypes
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputDatatypeDF.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 03
+### Viewing and Manipulating Data with Pandas
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data
+- Data yang dijadikan DataFrame tidak selamanya memiliki baris yang sedikit. 
+- Implementasi masalah sains data, umumnya banyak menggunakan data dengan instance dan kolom yang sangat banyak. 
+- Untuk itu pandas menyediakan cara untuk view data.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Head and Tail
+
+- Untuk melihat contoh kecil objek Series atau DataFrame, gunakan fungsi head() dan tail(). 
+- Jumlah default elemen yang akan ditampilkan adalah lima, tetapi Anda dapat memberikan nomor khusus.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Head and Tail
+
+Contoh Head mengoutputkan 5 row pertama
+```python
+import numpy as np 
+# Generate Dataframe berisi 10 ribu row dan 1 kolom 
+df = pd.DataFrame(np.random.randn(10000)) 
+df.head()
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputHead.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Head and Tail
+
+Contoh Tail mengoutputkan 5 row terakhir
+```python
+import numpy as np 
+# Generate Dataframe berisi 10 ribu row dan 1 kolom 
+df = pd.DataFrame(np.random.randn(10000)) 
+df.tail()
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputTail.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Head and Tail
+
+Contoh Head (10) mengoutputkan 10 row pertama
+```python
+import numpy as np 
+# Generate Dataframe berisi 10 ribu row dan 1 kolom 
+df = pd.DataFrame(np.random.randn(10000)) 
+df.head(10)
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputHead10.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Index and Column
+
+Contoh menampilkan index dataframe
+
+```python
+df = pd.DataFrame(data = data_dict) 
+print(df.index) 
+print(list(df.index))
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputIndex.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Index and Column
+
+Contoh menampilkan column dataframe
+```python
+df = pd.DataFrame(data = data_dict) 
+print(df.columns) 
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputColumn.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Info
+
+.info() memberikan informasi index, kolom , tipe data tiap kolom dan jumlah data yang non null
+
+```python
+df = pd.DataFrame(data = data_dict) 
+df.info()
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputInfo.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Info
+
+.info() memberikan informasi jumlah byte memori yang digunakan untuk dataframe.
+
+<img src="Dosen/Algoritma Pemrograman/img/outputInfo2.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### View Data : Describe
+
+Informasi statistik dasar dari sebuah dataframe dapat dilihat dengan cara berikut:
+```python
+df = pd.DataFrame(data = data_dict) 
+df.describe()
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputDescribe.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 04
+### Manipulating Data with Pandas
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data
+
+- Data sering kali tidak teratur sehingga dengan melakukan operasi tertentu kita dapat membuat data dapat dimengerti berdasarkan kebutuhan seseorang
+- Proses mengubah data yang tidak teratur menjadi informasi yang bermakna ini dapat dilakukan dengan manipulasi data.
+- Berikut adalah berbagai operasi yang digunakan untuk memanipulasi dataframe
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Transpose
+
+```python
+a = np.random.randn(100) 
+b = np.random.randn(100) 
+df = pd.DataFrame({'A':a,'B':b}) 
+df.head()
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputBeforeTranspose.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Transpose
+
+```python
+df.T
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputTranspose.png" alt="" style="object-fit: scale-down">
+
+<img src="Dosen/Algoritma Pemrograman/img/outputTransposeIndex.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Sorting
+
+Contoh melakukan sorting pada dataframe by index
+
+```python
+a = np.random.randn(100) 
+b = np.random.randn(100) 
+df = pd.DataFrame({'A':a,'B':b}) 
+df.sort_index(axis=1, ascending=False)
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputSortingIndex.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Sorting
+
+Contoh melakukan sorting pada dataframe by values
+```python
+df.sort_values(by='A')
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputSortingValue.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Terdapat beberapa cara untuk menyeleksi data di dalam dataframe
+- Seleksi dengan menampilkan seluruh isi 1 kolom
+- Seleksi baris menggunakan []
+- Seleksi menggunakan label / index
+- Seleksi dengan position
+- Seleksi dengan boolean index
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Contoh seleksi dengan menampilkan seluruh isi 1 kolom
+```python
+df['A'] 
+# atau
+df.A
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectKolom.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Contoh seleksi dengan menampilkan seluruh isi 1 baris dengan []
+```python
+a = np.random.randn(100) 
+b = np.random.randn(100) 
+df = pd.DataFrame({'A':a,'B':b}) 
+df[1:5]
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectBaris1.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Contoh seleksi dengan menampilkan seluruh isi 1 baris dengan []
+```python
+df[:]
+```
+
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectBaris2.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Contoh seleksi menggunakan index
+```python
+a = np.random.randn(100) 
+b = np.random.randn(100) 
+df = pd.DataFrame({'A':a,'B':b}) 
+df.loc[0:3]
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectLabel1.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Contoh seleksi menggunakan label 
+
+```python
+a = np.random.randn(100) 
+b = np.random.randn(100) 
+df = pd.DataFrame({'A':a,'B':b}) 
+df.loc[:10,["A"]]
+```
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectLabel2.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Contoh seleksi menggunakan position
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectPosition.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Contoh seleksi menggunakan boolean indexing.
+
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectBoolean1.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Selecting
+
+Pada seleksi boolean indexing akan menggunakan value dari satu kolom untuk menyeleksi data untuk seluruh kolom dengan satu kondisi value.Jika tidak memenuhi maka akan di assign NaN.
+<img src="Dosen/Algoritma Pemrograman/img/outputSelectBoolean2.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Filling
+
+Contoh filling pada missing value
+<img src="Dosen/Algoritma Pemrograman/img/outputFilling1.png" alt="" style="object-fit: scale-down">
+
+<img src="Dosen/Algoritma Pemrograman/img/outputFilling2.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Deleting
+
+Contoh deleting by index
+<img src="Dosen/Algoritma Pemrograman/img/outputDelete1.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Manipulate Data : Deleting
+
+Contoh deleting by column
+
+<img src="Dosen/Algoritma Pemrograman/img/outputDelete2.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Import from .csv
+```python
+import pandas as pd 
+filename = './Nilai.csv' 
+df = pandas.read_csv(filename)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Save to .csv
+```python
+filename_to_save = 'dat.csv' 
+df2.to_csv(filename_to_save)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 05
+### Exercise
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## 06
+### Reference
+
+- Jake VanderPlas. Goodrich, et al. 2016. Python Data Science Handbook (1st. ed.). O'Reilly Media, Inc.
+</div></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/reveal-pointer/pointer.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
